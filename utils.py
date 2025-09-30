@@ -1,6 +1,6 @@
 from zdbs.utils import get as db
 
-def get_server(name: str): 
+def get_server(name: str):
     return db().cursor().execute("SELECT ip FROM server WHERE name = ?",(name,)).fetchone()
 
 def get_domain(ip: str):
@@ -11,28 +11,28 @@ def get_ip(domain: str):
 
 def add_domain(name:str, ip:str, owner: str):
     con = db()
-    cur = db().cursor()
-    cur.execute("INSERT INTO domain (?,?,?)",(name,owner,ip))
+    cur = con.cursor()
+    cur.execute("INSERT INTO domain (domain, owner, ip) VALUES (?, ?, ?)", (name, owner, ip))
     con.commit()
     con.close()
 
 def add_server(name:str, ip:str):
     con = db()
-    cur = db().cursor()
+    cur = con.cursor()
     cur.execute("INSERT INTO server (?,?)",(name,ip))
     con.commit()
     con.close()
 
 def remove_domain(name:str):
     con = db()
-    cur = db().cursor()
+    cur = con.cursor()
     cur.execute("DELETE FROM domain WHERE name = ?",(name,))
     con.commit()
     con.close()
 
 def remove_server(name:str):
     con = db()
-    cur = db().cursor()
+    cur = con.cursor()
     cur.execute("DELETE FROM server WHERE name = ?",(name,))
     con.commit()
     con.close()
@@ -46,7 +46,7 @@ def status(code: int, *data):
     4*: SERVER ERROR
     '''
     delimiter = '\0'
-    
+
     codes = {
         10: "OK",
         11: "SIR REDIRECT",

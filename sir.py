@@ -8,7 +8,7 @@ import re
 from utils import *
 
 sn = open("sn").read()
-regex = f"^.*#(.*)$"
+regex = f"^(.*)#(.*)$"
 
 def handle_client(connection,address):
     recv = connection.recv(1024).decode()
@@ -24,17 +24,17 @@ def handle_request(request):
         return status(21,cmd)
     match cmd:
         case "i" | "d":
-            n = re.search(regex,data).group(1)
+            n = re.search(regex,data)
 
-            if n.strip().replace("\n","") != sn.strip().replace("\n",""):
-                server = get_server()
+            if n.group(2).strip().replace("\n","") != sn.strip().replace("\n",""):
+                server = get_server(n.group(2))
                 if server == None:
                     return status(31,data)
                 return status(11,server)
             if cmd == "i":
-                result = get_ip(data)
+                result = get_ip(n.group(1))
             else:
-                result = get_domain(data)
+                result = get_domain(n.group(1))
             if result == None:
                 return status(30,data)
             return status(10,result)
@@ -44,7 +44,7 @@ def handle_request(request):
 def main(port: int):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    sock.bind(('127.0.0.1', port))
+    sock.bind(('0.0.0.0', port))
     sock.listen(5)
 
     while True:
